@@ -1,0 +1,24 @@
+/* vamos a alacenar tres valores para llevarlos como array a P5Js y que pueda utlizar los tres valores para dibujar algo*/
+
+int valoresJS [3]; // vamos a almacenar los valores del Josystik en un array para poder llevarlos a p5JS
+
+void setup() {
+    Serial.begin(9600); // Iniciar la comunicación serie
+    pinMode(2, INPUT_PULLUP); // Configurar el botón con resistencia pull-up interna
+}
+
+void loop() {
+    valoresJS [0]= analogRead(A0); // Eje X del joystick
+    valoresJS [1]= analogRead(A1); // Eje Y del joystick
+    valoresJS [2]= digitalRead(2); // Botón del joystick
+
+    // Imprimir valores en el Monitor Serie
+
+    Serial.print(valoresJS [0]);// valor analógico
+        Serial.print(",");
+    Serial.print(valoresJS [1]);// valor analógico
+        Serial.print(",");
+    Serial.println(valoresJS [2]);// valor digital
+
+    delay(100); // Pequeña pausa para evitar saturación del puerto serie
+}
