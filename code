@@ -1,0 +1,69 @@
+/* 
+Este scketch permite leer tres valores: dos analógicos que indican la posición del círculo, y uno digital que cambia el color del circulo.
+Es importante vincular en el html la libreria de p5.serial ->     <script language="javascript" type="text/javascript" src="https://cdn.jsdelivr.net/npm/p5.serialserver@0.0.28/lib/p5.serialport.js"></script>
+by Ricardo Espinosa, febero 2025
+*/
+
+let serial;
+let latestData = [511,511,1]; // array de tres valores
+
+function setup() {
+ createCanvas(500, 500);
+ background(240);
+ serial = new p5.SerialPort();
+
+ serial.list();
+ serial.open('/dev/tty.usbmodem14111'); // atencion al puerto correcto
+ serial.on('connected', serverConnected);
+ serial.on('list', gotList);
+ serial.on('data', gotData);
+ serial.on('error', gotError);
+ serial.on('openn', gotOpen);
+ serial.on('close', gotClose);
+}
+function serverConnected() {
+ print("Connected to Server");
+}
+function gotList(thelist) {
+ print("List of Serial Ports:");
+
+ for (let i = 0; i < thelist.length; i++) {
+  print(i + " " + thelist[i]);
+ }
+}
+function gotOpen() {
+ print("Serial Port is Open");
+}
+function gotClose(){
+ print("Serial Port is Closed");
+ latestData = "Serial Port is Closed";
+}
+function gotError(theerror) {
+ print(theerror);
+}
+function gotData() {
+ let currentString = serial.readLine();
+  trim(currentString);
+ if (!currentString) return;
+ console.log(currentString);
+ latestData = currentString;
+  // modificiación para que lea los tres valores
+    let dataArray = currentString.split(',').map(Number);
+  if (dataArray.length === 3) { // Asegúrate de que hay tres valores
+    latestData = dataArray;
+  }
+}
+function draw() {
+
+  let posX=map(latestData[1], 0, 1023, 0, 500);
+  let posY=map(latestData[0], 0, 1023, 500, 0);
+   
+  background(240, 240,240,0);
+  if (latestData[2] == 0) {
+    fill(255, 0, 0,10); // Rojo
+  } else {
+    fill(200, 200, 200, 10); // Gris semitransparente
+  }
+  noStroke();
+  circle (posX,posY,50);
+}
